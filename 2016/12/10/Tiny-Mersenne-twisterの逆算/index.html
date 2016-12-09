@@ -6,7 +6,10 @@
   <title>Tiny Mersenne twisterの逆算 | ぽよのーと</title>
   <meta name="author" content="おだんぽよ">
   
-  <meta name="description" content="この記事はPokémon RNG Advent Calendar 2016の9日目の記事です．  
+  <meta name="description" content="この記事はPokémon RNG Advent Calendar 2016の9日目の記事です．
+
+
+
 Tiny Mersenne twister(以下Tiny MT)において現在のstatus4つ(128bitのseed)が与えられた時，1つ前のstatus4つを求めることは出来るか計算したところ，出来ることがわかったのでまとめます．">
   
   
@@ -73,7 +76,10 @@ Tiny Mersenne twister(以下Tiny MT)において現在のstatus4つ(128bitのsee
     </header>
     <div class="entry">
       
-        <p>この記事は<a href="http://www.adventar.org/calendars/1433" target="_blank" rel="external">Pokémon RNG Advent Calendar 2016</a>の9日目の記事です．  </p>
+        <p>この記事は<a href="http://www.adventar.org/calendars/1433" target="_blank" rel="external">Pokémon RNG Advent Calendar 2016</a>の9日目の記事です．</p>
+<iframe src="//hatenablog-parts.com/embed?url=http%3A%2F%2Fwww.adventar.org%2Fcalendars%2F1433" title="Pokémon RNG Advent Calendar 2016 - Adventar" class="embed-card embed-webcard" scrolling="no" frameborder="0" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;"></iframe>
+
+
 <p>Tiny Mersenne twister(以下Tiny MT)において現在のstatus4つ(128bitのseed)が与えられた時，1つ前のstatus4つを求めることは出来るか計算したところ，出来ることがわかったのでまとめます． </p>
 <a id="more"></a>
 <p>TinyMTのstatus更新式は次のようになっています．<br><img src="TinyMT.png" alt="" title="TinyMTのstatus更新式"><br>斎藤睦夫, and 松本眞. “高速並列計算用の状態空間の小さな高品質疑似乱数生成器.” 研究報告ハイパフォーマンスコンピューティング (HPC) 2011.3 (2011): 1-6. より引用．</p>
