@@ -1,0 +1,210 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  
+  <title>Tiny Mersenne twisterの逆算 | ぽよのーと</title>
+  <meta name="author" content="おだんぽよ">
+  
+  <meta name="description" content="Tiny Mersenne twister(以下Tiny MT)において現在のstatus4つ(128bitのseed)が与えられた時，1つ前のstatus4つを求めることは出来るか計算したところ，出来ることがわかったのでまとめます．">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="Tiny Mersenne twisterの逆算"/>
+  <meta property="og:site_name" content="ぽよのーと"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="ぽよのーと" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]--><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+  
+
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">ぽよのーと</a></h1>
+  <h2><a href="/"></a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">Home</a></li>
+    
+      <li><a href="/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2016-12-09T16:19:30.000Z"><a href="/2016/12/10/Tiny-Mersenne-twisterの逆算/">2016-12-10</a></time>
+      
+      
+  
+    <h1 class="title">Tiny Mersenne twisterの逆算</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <p>Tiny Mersenne twister(以下Tiny MT)において現在のstatus4つ(128bitのseed)が与えられた時，1つ前のstatus4つを求めることは出来るか計算したところ，出来ることがわかったのでまとめます． </p>
+<a id="more"></a>
+<p>TinyMTのstatus更新式は次のようになっています．<br><img src="TinyMT.png" alt="" title="TinyMTのstatus更新式"><br>斎藤睦夫, and 松本眞. “高速並列計算用の状態空間の小さな高品質疑似乱数生成器.” 研究報告ハイパフォーマンスコンピューティング (HPC) 2011.3 (2011): 1-6. より引用．</p>
+<p>基本的にはこの式を下から逆に計算するだけになります．</p>
+<h2 id="前準備"><a href="#前準備" class="headerlink" title="前準備"></a>前準備</h2><p>前準備として，$f(x) = x \oplus (x &gt;&gt; n)$のような関数の逆関数の求め方を紹介します($\oplus$は排他的論理和を表します)．<br><a href="http://d.hatena.ne.jp/oupo/20141016/1413413630" target="_blank" rel="external">メルセンヌツイスタの調律を行列で書く</a>  </p>
+<p>また現在のstatusをそれぞれ$s_1, s_2, s_3, s_4$と書き，求めたい1つ前のstatusをそれぞれ$ps_1, ps_2, ps_3, ps_4$と書きます．</p>
+<h2 id="14行目から17行目"><a href="#14行目から17行目" class="headerlink" title="14行目から17行目"></a>14行目から17行目</h2><p>12行目をみれば$y$は$s_3$だとわかるので，$s_3$の奇偶をみれば良いことになります．よって<br><span>$${\rm s_1^{\prime}} = 
+  \begin{cases}
+    s_1 &amp; (s_3 が偶数) \\
+    s_1 \oplus {\rm mat_1} &amp; (s_3 が奇数)
+  \end{cases} \\
+{\rm s_2^{\prime}} = 
+  \begin{cases}
+    s_2 &amp; (s_3 が偶数) \\
+    s_2 \oplus {\rm mat_2} &amp; (s_3 が奇数)
+  \end{cases}$$</span><!-- Has MathJax --><br>となります．</p>
+<h2 id="9行目から12行目"><a href="#9行目から12行目" class="headerlink" title="9行目から12行目"></a>9行目から12行目</h2><p>まず${\rm ps_1, ps_2}$はただ単に代入しているだけなので<br><span>$${\rm ps_1} = s_0 \\
+{\rm ps_2} = s_1^{\prime}$$</span><!-- Has MathJax --><br>となります．<br>説明のために$x,y$をそれぞれ次のように定義します．<br><span>$$\begin{align*}
+  y &amp;= s_3 \\
+  x &amp;= s_2^{\prime} \oplus (y &lt;&lt; 10)
+\end{align*}$$</span><!-- Has MathJax --></p>
+<h2 id="5行目から8行目"><a href="#5行目から8行目" class="headerlink" title="5行目から8行目"></a>5行目から8行目</h2><h3 id="ps3を求める"><a href="#ps3を求める" class="headerlink" title="ps3を求める"></a>ps3を求める</h3><p>式の上で区別するために8行目の右辺の$y$を$y^{\prime}$と置きます．<br>これを使って8行目を丁寧に書くと，$y = y^{\prime} \oplus (y^{\prime} &gt;&gt; 1) \oplus x$となります．$x$を移行し，行列$A$を$f(x)=x \oplus (x &gt;&gt; 1)$と変換する行列だと考えると最終的に8行目は$x \oplus y = A y^{\prime}$と書けます．<br>上で紹介した<a href="http://d.hatena.ne.jp/oupo/20141016/1413413630" target="_blank" rel="external">メルセンヌツイスタの調律を行列で書く</a> を参考にこの行列$A$の逆行列$A^{-1}$を求めてやると，$y^{\prime} = A^{-1}(x \oplus y)$となり，6行目よりこれは${\rm ps_3}$に一致します．以上のことをまとめると<br><span>$$\begin{array}{cc}
+  {\rm ps_3} = A^{-1}(x \oplus y) &amp; (Aはf(x)=x \oplus (x &gt;&gt; 1)を表す行列)
+\end{array}$$</span><!-- Has MathJax --><br>となります．</p>
+<h3 id="ps0を求める"><a href="#ps0を求める" class="headerlink" title="ps0を求める"></a>ps0を求める</h3><p>先ほどと同じく7行目の右辺の$x$を$x^{\prime}$と置きます．<br>これを使って7行目を丁寧に書くと，$x = x^{\prime} \oplus (x^{\prime} &lt;&lt; 1)$と書けます．行列$B$を$f(x) = x \oplus (x &lt;&lt; 1)$と変換する行列だと考えると，$x^{\prime} = B^{-1}x$となります．<br>これを使うと${\rm ps_0}$は</p>
+<span>$$\begin{array}{cc}
+  {\rm ps_0} = x^{\prime} \oplus {\rm ps_1} \oplus {\rm ps_2}
+\end{array}$$</span><!-- Has MathJax -->
+<p>となります．</p>
+<h2 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h2><p>これですべての${\rm ps_0, ps_1, ps_2, ps_3}$を求める事ができました．<br>行列$A$は$f(x)=x \oplus (x &gt;&gt; 1)$を表す行列，行列$B$は$f(x) = x \oplus (x &lt;&lt; 1)$を表す行列だとすると，まとめると次のようになります．<br><span>$$\begin{align*}
+  {\rm ps_1} &amp;= s_0 \\
+  {\rm ps_2} &amp;= s_1^{\prime} \\
+  {\rm ps_3} &amp;= A^{-1}(x \oplus y) \\
+  {\rm ps_0} &amp;= B^{-1}x \oplus {\rm ps_1} \oplus {\rm ps_2}
+\end{align*}$$</span><!-- Has MathJax --></p>
+<h2 id="ソースコード"><a href="#ソースコード" class="headerlink" title="ソースコード"></a>ソースコード</h2><script src="//gist.github.com/odanado/f81646d51fc4eab9825d8c741aa081a3.js"></script>
+      
+    </div>
+    <footer>
+      
+        
+        
+        
+          
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+    
+      <a class="addthis_button_tweet"></a>
+    
+    
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
+
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article></div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="Search">
+    <input type="hidden" name="q" value="site:odanpoyo.github.io">
+  </form>
+</div>
+
+  
+
+  
+
+  
+<div class="widget tag">
+  <h3 class="title">Recent Posts</h3>
+  <ul class="entry">
+    
+      <li>
+        <a href="/2016/12/10/Tiny-Mersenne-twisterの逆算/">Tiny Mersenne twisterの逆算</a>
+      </li>
+    
+      <li>
+        <a href="/2016/12/09/移転しました/">移転しました</a>
+      </li>
+    
+  </ul>
+</div>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2016 おだんぽよ
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]]}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+</body>
+</html>
