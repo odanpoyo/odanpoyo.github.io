@@ -85,6 +85,7 @@
 <h1 id="使い方"><a href="#使い方" class="headerlink" title="使い方"></a>使い方</h1><p>URLを叩くだけです．<br>例えば <code>6 10 9 15 10 0 2 7 5 8</code> という針が観測されたなら，クエリ文字列の部分に針を指定します．<br><a href="http://49.212.217.137:19937/gen7/sfmt/seed?needle=6,10,9,15,10,0,2,7,5,8" target="_blank" rel="external">http://49.212.217.137:19937/gen7/sfmt/seed?needle=6,10,9,15,10,0,2,7,5,8</a><br>レスポンスはJSON形式で返ってきます．</p>
 <figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&#123;<span class="attr">"results"</span>: [&#123;<span class="attr">"seed"</span>: <span class="string">"bd1646f7"</span>, <span class="attr">"encoded_needle"</span>: <span class="string">"098726e4"</span>, <span class="attr">"step"</span>: <span class="number">417</span>&#125;]&#125;</div></pre></td></tr></table></figure>
 <p>針の数は8個以上15個以下です．</p>
+<h1 id="SFMTの針データベース作成プログラムについて"><a href="#SFMTの針データベース作成プログラムについて" class="headerlink" title="SFMTの針データベース作成プログラムについて"></a>SFMTの針データベース作成プログラムについて</h1><p>先日<a href="https://odanpoyo.github.io/2017/01/25/SFMT-DB/">SFMTの針データベース作成プログラム</a> を公開しました．この記事を知っている方の中には，「APIを公開するなら何故ローカルにDBを作成するプログラムを配布したんだろう？」「最初からAPIの公開のみでよかったのでは？」と思う方がいるかもしれません．私はDBを作成するプログラムを配布する意味はあったと考えています．なぜなら，APIのみを公開し全ての人がそれに依存してしまう構造はとても脆弱だからです．．DBを作成するプログラムも配布することでDBを持っている人を分散し，もし仮にAPIの公開が停止になっても乱数調整が可能であるような状態にしていたいのです．</p>
 
       
     </div>
