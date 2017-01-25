@@ -6,7 +6,7 @@
   <title>ポケモンSM固定乱数の初期seed特定APIができました | ぽよのーと</title>
   <meta name="author" content="おだんぽよ">
   
-  <meta name="description" content="タイトルそのままです．ツール開発が活発になると良いなあ．">
+  <meta name="description" content="タイトルそのままです．ツール開発が活発になると良いなあ．サーバに著しく負荷をかける行為はお止め下さい．">
   
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -72,7 +72,7 @@
     </header>
     <div class="entry">
       
-        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>タイトルそのままです．ツール開発が活発になると良いなあ．</p>
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>タイトルそのままです．ツール開発が活発になると良いなあ．<br><strong>サーバに著しく負荷をかける行為はお止め下さい．</strong></p>
 <a id="more"></a>
 <h1 id="動機"><a href="#動機" class="headerlink" title="動機"></a>動機</h1><p>ポケモンSMにおいて固定乱数を行うには，初期seed特定のために16GBのDBを作成する必要がありました．手持ちのパソコンに空き容量がない場合や，ツールに組むこむ場合に16GBのファイルは大きな障壁となっていました．そこで初期seed特定のためのAPIを公開します．</p>
 <h1 id="使い方"><a href="#使い方" class="headerlink" title="使い方"></a>使い方</h1><p>URLを叩くだけです．<br>例えば <code>6 10 9 15 10 0 2 7 5 8</code> という針が観測されたなら，クエリ文字列の部分に針を指定します．<br><a href="http://49.212.217.137:19937/gen7/sfmt/seed?needle=6,10,9,15,10,0,2,7,5,8" target="_blank" rel="external">http://49.212.217.137:19937/gen7/sfmt/seed?needle=6,10,9,15,10,0,2,7,5,8</a><br>レスポンスはJSON形式で返ってきます．</p>
