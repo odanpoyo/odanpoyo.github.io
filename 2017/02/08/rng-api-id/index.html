@@ -69,7 +69,7 @@
     <header>
       
         <div class="icon"></div>
-        <time datetime="2017-02-07T15:42:33.000Z"><a href="/2017/02/08/rng-api-id/">2017-02-08</a></time>
+        <time datetime="2017-02-07T15:50:33.000Z"><a href="/2017/02/08/rng-api-id/">2017-02-08</a></time>
       
       
   
@@ -81,7 +81,7 @@
       
         <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>前回と同じくタイトルそのままです．<br><strong>サーバに著しく負荷をかける行為はお止め下さい．</strong></p>
 <a id="more"></a>
-<h1 id="初期seed特定の仕組み"><a href="#初期seed特定の仕組み" class="headerlink" title="初期seed特定の仕組み"></a>初期seed特定の仕組み</h1><p>ポケモンSMで”さいしょからはじめる”を選んだ場合，”つづきからはじめる”を選んだ場合と同様に32bit整数でSFMTが初期化され，人間が初めて針を観測できるまでに1012個の乱数が消費されます．データベースについては<a href="https://odanpoyo.github.io/2017/01/25/SFMT-DB/">SFMTの針データベース作成プログラム</a>の消費数を417から1012に変更したものを使用します．<br>また，主人公の名前入力が終わった後の確認画面で針を観測することができますが，名前入力中から針は生成され進行しているため，表示までラグが発生します．名前入力を一定のタイミングで行い，全てのラグの範囲を考慮して初期seedを検索することで，この問題を解決します．<br>具体的な乱数調整については<a href="http://blastoise-x.hatenablog.com/entry/SM-ID-RNG" target="_blank" rel="external">サンムーンID調整</a> を読んで下さい．</p>
+<h1 id="初期seed特定の仕組み"><a href="#初期seed特定の仕組み" class="headerlink" title="初期seed特定の仕組み"></a>初期seed特定の仕組み</h1><p>ポケモンSMで”さいしょからはじめる”を選んだ場合，”つづきからはじめる”を選んだ場合と同様に32bit整数でSFMTが初期化され，人間が初めて針を観測できるまでに1012個の乱数が消費されます．データベースについては<a href="https://odanpoyo.github.io/2017/01/25/SFMT-DB/">SFMTの針データベース作成プログラム</a>の消費数を417から1012に変更したものを使用します．<br>主人公の名前入力が終わった後の確認画面で針を観測することができますが，名前入力中から針は生成され進行しているため，表示までラグが発生します．名前入力を一定のタイミングで行い，全てのラグの範囲を考慮して初期seedを検索することで，この問題を解決します．<br>具体的な乱数調整については<a href="http://blastoise-x.hatenablog.com/entry/SM-ID-RNG" target="_blank" rel="external">サンムーンID調整</a> を読んで下さい．</p>
 <h1 id="使い方"><a href="#使い方" class="headerlink" title="使い方"></a>使い方</h1><p>URLを叩くだけです．<br>例えば，名前入力を一定のタイミングで行った時に <code>2 14 05 6 10 15 7 6 6 3 6 12</code> という針が観測されたなら，クエリ文字列の部分に指定して検索します．この時ツール内部では，0から16までの数字それぞれを各針の値に足すことで，17通りの全てのラグのパターンを考慮した検索を行っています．<br><a href="http://49.212.217.137:19937/gen7/sfmt/seed/id?needle=2,14,5,6,10,15,7,6,6,3,6,12" target="_blank" rel="external">http://49.212.217.137:19937/gen7/sfmt/seed/id?needle=2,14,5,6,10,15,7,6,6,3,6,12</a><br>この場合，次のような結果が返ってきます．<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&#123;&quot;results&quot;: [&#123;&quot;add&quot;: &quot;10&quot;, &quot;seed&quot;: &quot;01919810&quot;, &quot;encoded_needle&quot;: &quot;0d59b899&quot;, &quot;step&quot;: &quot;1012&quot;&#125;]&#125;</div></pre></td></tr></table></figure></p>
 <p>これは，初期seedは <code>0x01919810</code> で，ラグは針10個分進んでいたと解釈します．<br>つまりもしもラグなしで針を観測できていたら <code>9 4 12 13 0 5 14 13 13 10 13 2</code> だったということになります．</p>
 <h1 id="技術的な問題"><a href="#技術的な問題" class="headerlink" title="技術的な問題"></a>技術的な問題</h1><p>APIの公開を予告してから，実際に公開するまで数日間の遅れがありました．遅れた原因は公開するAPIの機能に針の「あいまい検索」を実装しようと考えていたためです．あいまい検索とは，人間が観測した針の値だけでなくその周辺の針も考慮して検索する機能のことです．この機能を実装するとデータベースにアクセスする回数が指数的に増大し，その結果ディスクIOがボトルネックとなり高速なレスポンスを実現出来なくなりました．なんとかこの問題を解決しようと試みましたが，メモリ1GBで外部記憶がHDDの現在借りているVPSでは不可能と判断して，あいまい検索を実装していないAPIを公開することになりました．</p>
