@@ -3,15 +3,13 @@
 <head>
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   
-  <title>SFMTの針データベース作成プログラム | ぽよのーと</title>
+  <title>Archives: 2017/2 | ぽよのーと</title>
   <meta name="author" content="おだんぽよ">
-  
-  <meta name="description" content="SFMTの針データベースを作成するプログラムを公開します．最終的なDBの容量は16GB，作成にかかる時間は30分程度です．">
   
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <meta property="og:title" content="SFMTの針データベース作成プログラム"/>
+  
   <meta property="og:site_name" content="ぽよのーと"/>
 
   
@@ -63,61 +61,26 @@
 <div class="clearfix"></div>
 </header>
   <div id="content" class="inner">
-    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
-  
-  <div class="post-content">
-    <header>
-      
-        <div class="icon"></div>
-        <time datetime="2017-01-24T15:40:10.000Z"><a href="/2017/01/25/SFMT-DB/">2017-01-25</a></time>
-      
-      
-  
-    <h1 class="title">SFMTの針データベース作成プログラム</h1>
-  
+    <div id="main-col" class="alignleft"><div id="wrapper">
+<h2 class="archive-title">2017/2</h2>
 
-    </header>
-    <div class="entry">
-      
-        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>SFMTの針データベースを作成するプログラムを公開します．最終的なDBの容量は16GB，作成にかかる時間は30分程度です．</p>
-<a id="more"></a>
-<h1 id="ソースコード"><a href="#ソースコード" class="headerlink" title="ソースコード"></a>ソースコード</h1><p><a href="https://github.com/RNGeek/QR-Database" target="_blank" rel="external">https://github.com/RNGeek/QR-Database</a> においてあります．</p>
-<h1 id="簡単な解説"><a href="#簡単な解説" class="headerlink" title="簡単な解説"></a>簡単な解説</h1><p>大まかにプログラムの流れを説明します．</p>
-<h2 id="32bitの初期seedを総当りする部分"><a href="#32bitの初期seedを総当りする部分" class="headerlink" title="32bitの初期seedを総当りする部分"></a>32bitの初期seedを総当りする部分</h2><p>417消費以降の針7つを32bit整数にエンコードします．針を7つに抑えることによって針の表現が32bitで済みます．ここで12個針を取って64bit整数にエンコードしてもいいですが，検索する時の性能に差はないことや，ファイルサイズの大きさから，採用しませんでした．またこの部分はOpenMPを用いて並列化しています．<br>次にエンコードした32bit整数の100で割った余りを計算し，その値によって決まるファイルに初期seedと合わせた64bit整数を書き込みます．これは1つのファイルに初期seedと針の情報を全て書き込むのではなく，100個のファイルに分割して保存するためです．こうすることで後述のソートを行う時にメモリ上でソートできます．</p>
-<h2 id="ソート部分"><a href="#ソート部分" class="headerlink" title="ソート部分"></a>ソート部分</h2><p>32GBのデータをソートしようとすると大抵のマシンではメモリが足りないため，外部ソートを行う必要があります．しかし上にも書いたように100個ファイルに分割したことで，ファイル1つは320MB程度の大きさになります．これはメモリに乗る大きさです．ソートには <code>parallel-radix-sort</code> を使いました．<br>また，最終的なデータの書き出しは初期seedのみに限ることでトータルのファイルのサイズを半減しています．</p>
-<h2 id="検索部分"><a href="#検索部分" class="headerlink" title="検索部分"></a>検索部分</h2><p>検索にはソート済みデータに対して高速に検索を行える二分探索を採用しました．針7つでは初期seedを完全には絞り込めないので，実際に針の値を計算して妥当性を判定しています．</p>
-<h1 id="必要な開発環境"><a href="#必要な開発環境" class="headerlink" title="必要な開発環境"></a>必要な開発環境</h1><p>コンパイルができると確認している環境は，Windowsでは<code>msys2</code>のみです．Visual Studioでコンパイル可能かは検証していません．<br>それとソースコードをZIPでダウンロードした場合，<code>SFMT</code>と<code>parallel-radix-sort</code>に関するフォルダは空になっているので気をつけてください．</p>
 
-      
-    </div>
-    <footer>
-      
-        
-        
-  
-  <div class="tags">
-    <a href="/tags/ポケモン/">ポケモン</a>, <a href="/tags/乱数/">乱数</a>, <a href="/tags/プログラミング/">プログラミング</a>
+  <div class="archive">
+    
+      <article class="post">
+        <div class="post-content">
+          <header>
+            <div class="icon"></div>
+            <time datetime="2017-02-05T13:42:33.000Z"><a href="/2017/02/05/rng-api-id/">2017-02-05</a></time>
+            
+              <h1 class="title"><a href="/2017/02/05/rng-api-id/">ポケモンSMのID乱数用初期seed特定APIができました</a></h1>
+            
+          </header>
+        </div>
+      </article>
+    
   </div>
-
-        
-          
-  <div class="addthis addthis_toolbox addthis_default_style">
-    
-    
-      <a class="addthis_button_tweet"></a>
-    
-    
-    
-    <a class="addthis_counter addthis_pill_style"></a>
-  </div>
-  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
-
-        
-      
-      <div class="clearfix"></div>
-    </footer>
-  </div>
-</article></div></div>
+</div></div>
     <aside id="sidebar" class="alignright">
   <div class="search">
   <form action="//google.com/search" method="get" accept-charset="utf-8">

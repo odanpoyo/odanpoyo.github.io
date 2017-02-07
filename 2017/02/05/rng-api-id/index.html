@@ -3,15 +3,15 @@
 <head>
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   
-  <title>SFMTの針データベース作成プログラム | ぽよのーと</title>
+  <title>ポケモンSMのID乱数用初期seed特定APIができました | ぽよのーと</title>
   <meta name="author" content="おだんぽよ">
   
-  <meta name="description" content="SFMTの針データベースを作成するプログラムを公開します．最終的なDBの容量は16GB，作成にかかる時間は30分程度です．">
+  <meta name="description" content="前回と同じくタイトルそのままです．サーバに著しく負荷をかける行為はお止め下さい．">
   
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <meta property="og:title" content="SFMTの針データベース作成プログラム"/>
+  <meta property="og:title" content="ポケモンSMのID乱数用初期seed特定APIができました"/>
   <meta property="og:site_name" content="ぽよのーと"/>
 
   
@@ -69,24 +69,22 @@
     <header>
       
         <div class="icon"></div>
-        <time datetime="2017-01-24T15:40:10.000Z"><a href="/2017/01/25/SFMT-DB/">2017-01-25</a></time>
+        <time datetime="2017-02-05T13:42:33.000Z"><a href="/2017/02/05/rng-api-id/">2017-02-05</a></time>
       
       
   
-    <h1 class="title">SFMTの針データベース作成プログラム</h1>
+    <h1 class="title">ポケモンSMのID乱数用初期seed特定APIができました</h1>
   
 
     </header>
     <div class="entry">
       
-        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>SFMTの針データベースを作成するプログラムを公開します．最終的なDBの容量は16GB，作成にかかる時間は30分程度です．</p>
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>前回と同じくタイトルそのままです．<br><strong>サーバに著しく負荷をかける行為はお止め下さい．</strong></p>
 <a id="more"></a>
-<h1 id="ソースコード"><a href="#ソースコード" class="headerlink" title="ソースコード"></a>ソースコード</h1><p><a href="https://github.com/RNGeek/QR-Database" target="_blank" rel="external">https://github.com/RNGeek/QR-Database</a> においてあります．</p>
-<h1 id="簡単な解説"><a href="#簡単な解説" class="headerlink" title="簡単な解説"></a>簡単な解説</h1><p>大まかにプログラムの流れを説明します．</p>
-<h2 id="32bitの初期seedを総当りする部分"><a href="#32bitの初期seedを総当りする部分" class="headerlink" title="32bitの初期seedを総当りする部分"></a>32bitの初期seedを総当りする部分</h2><p>417消費以降の針7つを32bit整数にエンコードします．針を7つに抑えることによって針の表現が32bitで済みます．ここで12個針を取って64bit整数にエンコードしてもいいですが，検索する時の性能に差はないことや，ファイルサイズの大きさから，採用しませんでした．またこの部分はOpenMPを用いて並列化しています．<br>次にエンコードした32bit整数の100で割った余りを計算し，その値によって決まるファイルに初期seedと合わせた64bit整数を書き込みます．これは1つのファイルに初期seedと針の情報を全て書き込むのではなく，100個のファイルに分割して保存するためです．こうすることで後述のソートを行う時にメモリ上でソートできます．</p>
-<h2 id="ソート部分"><a href="#ソート部分" class="headerlink" title="ソート部分"></a>ソート部分</h2><p>32GBのデータをソートしようとすると大抵のマシンではメモリが足りないため，外部ソートを行う必要があります．しかし上にも書いたように100個ファイルに分割したことで，ファイル1つは320MB程度の大きさになります．これはメモリに乗る大きさです．ソートには <code>parallel-radix-sort</code> を使いました．<br>また，最終的なデータの書き出しは初期seedのみに限ることでトータルのファイルのサイズを半減しています．</p>
-<h2 id="検索部分"><a href="#検索部分" class="headerlink" title="検索部分"></a>検索部分</h2><p>検索にはソート済みデータに対して高速に検索を行える二分探索を採用しました．針7つでは初期seedを完全には絞り込めないので，実際に針の値を計算して妥当性を判定しています．</p>
-<h1 id="必要な開発環境"><a href="#必要な開発環境" class="headerlink" title="必要な開発環境"></a>必要な開発環境</h1><p>コンパイルができると確認している環境は，Windowsでは<code>msys2</code>のみです．Visual Studioでコンパイル可能かは検証していません．<br>それとソースコードをZIPでダウンロードした場合，<code>SFMT</code>と<code>parallel-radix-sort</code>に関するフォルダは空になっているので気をつけてください．</p>
+<h1 id="初期seed特定の仕組み"><a href="#初期seed特定の仕組み" class="headerlink" title="初期seed特定の仕組み"></a>初期seed特定の仕組み</h1><p>ポケモンSMで”さいしょからはじめる”を選んだ場合，”つづきからはじめる”を選んだ場合と同様に32bit整数でSFMTが初期化され，人間が初めて針を観測できるまでに1012個の乱数が消費されます．データベースについては<a href="https://odanpoyo.github.io/2017/01/25/SFMT-DB/">SFMTの針データベース作成プログラム</a>の消費数を417から1012に変更したものを使用します．<br>また，主人公の名前入力が終わった後の確認画面で針を観測することができますが，名前入力中から針は生成され進行しているため，表示までラグが発生します．名前入力を一定のタイミングで行い，全てのラグの範囲を考慮して初期seedを検索することで，この問題を解決します．<br>具体的な乱数調整については<a href="http://blastoise-x.hatenablog.com/entry/SM-ID-RNG" target="_blank" rel="external">サンムーンID調整</a> を読んで下さい．</p>
+<h1 id="使い方"><a href="#使い方" class="headerlink" title="使い方"></a>使い方</h1><p>URLを叩くだけです．<br>例えば，名前入力を一定のタイミングで行った時に <code>2 14 05 6 10 15 7 6 6 3 6 12</code> という針が観測されたなら，クエリ文字列の部分に指定して検索します．この時ツール内部では，0から16までの数字それぞれを各針の値に足すことで，17通りの全てのラグのパターンを考慮した検索を行っています．<br><a href="http://49.212.217.137:19937/gen7/sfmt/seed/id?needle=2,14,5,6,10,15,7,6,6,3,6,12" target="_blank" rel="external">http://49.212.217.137:19937/gen7/sfmt/seed/id?needle=2,14,5,6,10,15,7,6,6,3,6,12</a><br>この場合，次のような結果が返ってきます．<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&#123;&quot;results&quot;: [&#123;&quot;add&quot;: &quot;10&quot;, &quot;seed&quot;: &quot;01919810&quot;, &quot;encoded_needle&quot;: &quot;0d59b899&quot;, &quot;step&quot;: &quot;1012&quot;&#125;]&#125;</div></pre></td></tr></table></figure></p>
+<p>これは，初期seedは <code>0x01919810</code> で，ラグは針10個分進んでいたと解釈します．<br>つまりもしもラグなしで針を観測できていたら <code>9 4 12 13 0 5 14 13 13 10 13 2</code> だったということになります．</p>
+<h1 id="技術的な問題"><a href="#技術的な問題" class="headerlink" title="技術的な問題"></a>技術的な問題</h1><p>APIの公開を予告してから，実際に公開するまで数日間の遅れがありました．遅れた原因は公開するAPIの機能に針の「あいまい検索」を実装しようと考えていたためです．あいまい検索とは，人間が観測した針の値だけでなくその周辺の針も考慮して検索する機能のことです．この機能を実装するとデータベースにアクセスする回数が指数的に増大し，その結果ディスクIOがボトルネックとなり高速なレスポンスを実現出来なくなりました．なんとかこの問題を解決しようと試みましたが，メモリ1GBで外部記憶がHDDの現在借りているVPSでは不可能と判断して，あいまい検索を実装していないAPIを公開することになりました．</p>
 
       
     </div>
