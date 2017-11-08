@@ -3,13 +3,15 @@
 <head>
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   
-  <title>Archives: 2016 | ぽよのーと</title>
+  <title>TeamPreviewAnalyzerのミニアイコン検出アルゴリズム | ぽよのーと</title>
   <meta name="author" content="おだんぽよ">
+  
+  <meta name="description" content="最近開発したポケモンSMにおける選出画面を解析するWebアプリ TeamPreviewAnalyzer のアルゴリズムについて書きます．">
   
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  
+  <meta property="og:title" content="TeamPreviewAnalyzerのミニアイコン検出アルゴリズム"/>
   <meta property="og:site_name" content="ぽよのーと"/>
 
   
@@ -61,50 +63,58 @@
 <div class="clearfix"></div>
 </header>
   <div id="content" class="inner">
-    <div id="main-col" class="alignleft"><div id="wrapper">
-<h2 class="archive-title">2016</h2>
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2017-03-12T15:58:10.000Z"><a href="/2017/03/13/team-preview-analyzer-algorithm/">2017-03-13</a></time>
+      
+      
+  
+    <h1 class="title">TeamPreviewAnalyzerのミニアイコン検出アルゴリズム</h1>
+  
 
-
-  <div class="archive">
-    
-      <article class="post">
-        <div class="post-content">
-          <header>
-            <div class="icon"></div>
-            <time datetime="2016-12-19T10:06:03.000Z"><a href="/2016/12/19/ciww1kld700012xu9g1l77fyj/">2016-12-19</a></time>
-            
-              <h1 class="title"><a href="/2016/12/19/ciww1kld700012xu9g1l77fyj/">SM孵化乱数調査で実用化されなかったこと</a></h1>
-            
-          </header>
-        </div>
-      </article>
-    
-      <article class="post">
-        <div class="post-content">
-          <header>
-            <div class="icon"></div>
-            <time datetime="2016-12-09T16:19:30.000Z"><a href="/2016/12/10/ciww1kld100002xu9c327eevp/">2016-12-10</a></time>
-            
-              <h1 class="title"><a href="/2016/12/10/ciww1kld100002xu9c327eevp/">Tiny Mersenne twisterの逆算</a></h1>
-            
-          </header>
-        </div>
-      </article>
-    
-      <article class="post">
-        <div class="post-content">
-          <header>
-            <div class="icon"></div>
-            <time datetime="2016-12-09T12:21:22.000Z"><a href="/2016/12/09/ciww1kldj00032xu9lsv7twvv/">2016-12-09</a></time>
-            
-              <h1 class="title"><a href="/2016/12/09/ciww1kldj00032xu9lsv7twvv/">移転しました</a></h1>
-            
-          </header>
-        </div>
-      </article>
-    
+    </header>
+    <div class="entry">
+      
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>最近開発したポケモンSMにおける選出画面を解析するWebアプリ <a href="https://odanado.github.com/TeamPreviewAnalyzer" target="_blank" rel="external">TeamPreviewAnalyzer</a> のアルゴリズムについて書きます．</p>
+<a id="more"></a>
+<h1 id="開発の発端"><a href="#開発の発端" class="headerlink" title="開発の発端"></a>開発の発端</h1><p>// 元々開発したかった<br>// Qiitaの記事を貼る<br>// 大きく分けると2つのフェーズに分割されることを書く</p>
+<p>// サンプル画像を貼る</p>
+<h1 id="PT部分の切り出し"><a href="#PT部分の切り出し" class="headerlink" title="PT部分の切り出し"></a>PT部分の切り出し</h1><p>先ほど紹介した記事ではCandy?のエッジ検出によってPT部分の外枠を検出していました．この手法では偽トロで画面をキャプチャした選出画面に対してはうまく動作するものの，スマホで選出画面を撮影した画像では走査線が映り込みうまく検出できません<br>// 画像例を貼る？<br>そこで <code>TeamPreviewAnalyzer</code> は <code>opencv</code> の <code>inRange</code> 関数を使った手法を使用しています．これはHSV形式で指定した色の範囲を画像から抜き出すことが出来る関数です．<br>これを<br>// 日本語ガバガバマン</p>
+<h1 id="ミニアイコンの推定"><a href="#ミニアイコンの推定" class="headerlink" title="ミニアイコンの推定"></a>ミニアイコンの推定</h1>
+      
+    </div>
+    <footer>
+      
+        
+        
+  
+  <div class="tags">
+    <a href="/tags/ポケモン/">ポケモン</a>, <a href="/tags/TeamPreviewAnalyzer/">TeamPreviewAnalyzer</a>, <a href="/tags/プログラミング/">プログラミング</a>
   </div>
-</div></div>
+
+        
+          
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+    
+      <a class="addthis_button_tweet"></a>
+    
+    
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
+
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article></div></div>
     <aside id="sidebar" class="alignright">
   <div class="search">
   <form action="//google.com/search" method="get" accept-charset="utf-8">
