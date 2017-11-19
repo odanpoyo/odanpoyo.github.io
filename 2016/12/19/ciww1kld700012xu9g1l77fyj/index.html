@@ -82,14 +82,14 @@ SM孵化乱数調整の調査の上で実用化されなかったものを紹介
     </header>
     <div class="entry">
       
-        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>この記事は<a href="http://www.adventar.org/calendars/1433" target="_blank" rel="external">Pokémon RNG Advent Calendar 2016</a>の19日目の記事です．</p>
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>この記事は<a href="http://www.adventar.org/calendars/1433" target="_blank" rel="noopener">Pokémon RNG Advent Calendar 2016</a>の19日目の記事です．</p>
 <iframe src="//hatenablog-parts.com/embed?url=http%3A%2F%2Fwww.adventar.org%2Fcalendars%2F1433" title="Pokémon RNG Advent Calendar 2016 - Adventar" class="embed-card embed-webcard" scrolling="no" frameborder="0" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;"></iframe>
 
 <p>SM孵化乱数調整の調査の上で実用化されなかったものを紹介します．</p>
 <a id="more"></a>
-<h1 id="はじめに"><a href="#はじめに" class="headerlink" title="はじめに"></a>はじめに</h1><p><blockquote class="twitter-tweet" data-lang="ja"><p lang="ja" dir="ltr">色々情報集めてるとサンムーン乱数調整できるんじゃないかと思えてきた</p>&mdash; ろいしん (@Blastoise_X) <a href="https://twitter.com/Blastoise_X/status/803813346525020160" target="_blank" rel="external">2016年11月30日</a></blockquote></p>
+<h1 id="はじめに"><a href="#はじめに" class="headerlink" title="はじめに"></a>はじめに</h1><p><blockquote class="twitter-tweet" data-lang="ja"><p lang="ja" dir="ltr">色々情報集めてるとサンムーン乱数調整できるんじゃないかと思えてきた</p>&mdash; ろいしん (@Blastoise_X) <a href="https://twitter.com/Blastoise_X/status/803813346525020160" target="_blank" rel="noopener">2016年11月30日</a></blockquote></p>
 <p><script async src="//platform.twitter.com/widgets.js" charset="utf-8"></script><br>この1ヶ月も経たないうちに当初予想されていた形の”乱数調整”を遥かに上回るレベルでSMの孵化乱数調整が可能になりました．その結果12月19日現在，調査に加わっていた人やツール開発者以外の人でも乱数調整が可能な世界になりました．<br>私もサンムーンの取扱説明書を読んで他の人の助けもあり，内部で使われている乱数生成器がTiny Mersenne Twisterだと特定するなど貢献しました．<br>このように乱数調整の実用化に役立ったこともあれば，逆に調べたが見当違いだったことやより良い手法が発見されたため実用化されなかったこともありました．<br>この記事ではその実用化されなかったことを，同じことを他の人が調査するのを防止するためにも公開します．</p>
-<h1 id="初期seedの決定に使われるbit数"><a href="#初期seedの決定に使われるbit数" class="headerlink" title="初期seedの決定に使われるbit数"></a>初期seedの決定に使われるbit数</h1><p>TinyMTの考案者が書いた実装では，<a href="https://github.com/MersenneTwister-Lab/TinyMT/blob/master/tinymt/tinymt32.c" target="_blank" rel="external">tinymt32.c</a>にあるように，初期化するための関数が<code>tinymt32_init_by_array</code>と<code>tinymt32_init</code>の二つあります．TinyMTの初期化に前者は任意のbit数の数値を使えるのですが，後者は32bitの数値しか使うことが出来ません．これを見た私はゲームの開発者が32bitの初期seedで初期化していることを信じて，次のような初期seedを全探索するコードを書いて調査してみました．<br><script src="//gist.github.com/odanado/f7643dc79f2924d23a5782cc3aa9b272.js"></script></p>
+<h1 id="初期seedの決定に使われるbit数"><a href="#初期seedの決定に使われるbit数" class="headerlink" title="初期seedの決定に使われるbit数"></a>初期seedの決定に使われるbit数</h1><p>TinyMTの考案者が書いた実装では，<a href="https://github.com/MersenneTwister-Lab/TinyMT/blob/master/tinymt/tinymt32.c" target="_blank" rel="noopener">tinymt32.c</a>にあるように，初期化するための関数が<code>tinymt32_init_by_array</code>と<code>tinymt32_init</code>の二つあります．TinyMTの初期化に前者は任意のbit数の数値を使えるのですが，後者は32bitの数値しか使うことが出来ません．これを見た私はゲームの開発者が32bitの初期seedで初期化していることを信じて，次のような初期seedを全探索するコードを書いて調査してみました．<br><script src="//gist.github.com/odanado/f7643dc79f2924d23a5782cc3aa9b272.js"></script></p>
 <p>マシンパワーに物を言わせてプログラムを走らせましたが，結果が出力されることはありませんでした．<br>流石に32bitより多いbit数の数値でTinyMTを初期化しているようです．</p>
 <h1 id="Z3を使ったseedの特定"><a href="#Z3を使ったseedの特定" class="headerlink" title="Z3を使ったseedの特定"></a>Z3を使ったseedの特定</h1><p>Z3とはMicrosoft Researchが開発している定理証明のソフトウェアです．簡単に言うと幾つかの等式や不等式の条件を渡すと，それを満たすような解を自動的に見つけてくれるものです．<br>これを使ってseedを特定できるのでは？との期待があった時もありましたが，water_blow さんがTinyMTの調律は最下位1bitに関しては線形だという発見をされてからはお蔵入りになりました．実はこいつを使うと，性格値や暗号化定数に相当する32bitの数値が8つ連続で観測できれば，現実的な時間でseedを特定することが出来ます．Z3のpythonラッパーであるZ3pyを使った実装が次です．<br><script src="//gist.github.com/odanado/5c0cf9c2901e195f15f42e03e679c6ef.js"></script></p>
 <p>前述した通り，ゲーム内の127連続する1bitを観測することでseedが特定できると分かったので実用化されることはありませんでした．</p>
@@ -195,6 +195,18 @@ SM孵化乱数調整の調査の上で実用化されなかったものを紹介
 <script src="/js/jquery.imagesloaded.min.js"></script>
 <script src="/js/gallery.js"></script>
 
+
+<script type="text/javascript">
+var disqus_shortname = 'poyo-note';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
 
 
 

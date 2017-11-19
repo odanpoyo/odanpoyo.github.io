@@ -81,7 +81,7 @@
       
         <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>SFMTの針データベースを作成するプログラムを公開します．最終的なDBの容量は16GB，作成にかかる時間は30分程度です．</p>
 <a id="more"></a>
-<h1 id="ソースコード"><a href="#ソースコード" class="headerlink" title="ソースコード"></a>ソースコード</h1><p><a href="https://github.com/RNGeek/QR-Database" target="_blank" rel="external">https://github.com/RNGeek/QR-Database</a> においてあります．</p>
+<h1 id="ソースコード"><a href="#ソースコード" class="headerlink" title="ソースコード"></a>ソースコード</h1><p><a href="https://github.com/RNGeek/QR-Database" target="_blank" rel="noopener">https://github.com/RNGeek/QR-Database</a> においてあります．</p>
 <h1 id="簡単な解説"><a href="#簡単な解説" class="headerlink" title="簡単な解説"></a>簡単な解説</h1><p>大まかにプログラムの流れを説明します．</p>
 <h2 id="32bitの初期seedを総当りする部分"><a href="#32bitの初期seedを総当りする部分" class="headerlink" title="32bitの初期seedを総当りする部分"></a>32bitの初期seedを総当りする部分</h2><p>417消費以降の針7つを32bit整数にエンコードします．針を7つに抑えることによって針の表現が32bitで済みます．ここで12個針を取って64bit整数にエンコードしてもいいですが，検索する時の性能に差はないことや，ファイルサイズの大きさから，採用しませんでした．またこの部分はOpenMPを用いて並列化しています．<br>次にエンコードした32bit整数の100で割った余りを計算し，その値によって決まるファイルに初期seedと合わせた64bit整数を書き込みます．これは1つのファイルに初期seedと針の情報を全て書き込むのではなく，100個のファイルに分割して保存するためです．こうすることで後述のソートを行う時にメモリ上でソートできます．</p>
 <h2 id="ソート部分"><a href="#ソート部分" class="headerlink" title="ソート部分"></a>ソート部分</h2><p>32GBのデータをソートしようとすると大抵のマシンではメモリが足りないため，外部ソートを行う必要があります．しかし上にも書いたように100個ファイルに分割したことで，ファイル1つは320MB程度の大きさになります．これはメモリに乗る大きさです．ソートには <code>parallel-radix-sort</code> を使いました．<br>また，最終的なデータの書き出しは初期seedのみに限ることでトータルのファイルのサイズを半減しています．</p>
@@ -188,6 +188,18 @@
 <script src="/js/jquery.imagesloaded.min.js"></script>
 <script src="/js/gallery.js"></script>
 
+
+<script type="text/javascript">
+var disqus_shortname = 'poyo-note';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
 
 
 

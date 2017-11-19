@@ -83,7 +83,7 @@ Tiny Mersenne twister(以下Tiny MT)において現在のstatus4つ(128bitのsee
     </header>
     <div class="entry">
       
-        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>この記事は<a href="http://www.adventar.org/calendars/1433" target="_blank" rel="external">Pokémon RNG Advent Calendar 2016</a>の9日目の記事です．</p>
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>この記事は<a href="http://www.adventar.org/calendars/1433" target="_blank" rel="noopener">Pokémon RNG Advent Calendar 2016</a>の9日目の記事です．</p>
 <iframe src="//hatenablog-parts.com/embed?url=http%3A%2F%2Fwww.adventar.org%2Fcalendars%2F1433" title="Pokémon RNG Advent Calendar 2016 - Adventar" class="embed-card embed-webcard" scrolling="no" frameborder="0" style="display: block; width: 100%; height: 155px; max-width: 500px; margin: 10px 0px;"></iframe>
 
 
@@ -91,7 +91,7 @@ Tiny Mersenne twister(以下Tiny MT)において現在のstatus4つ(128bitのsee
 <a id="more"></a>
 <p>TinyMTのstatus更新式は次のようになっています．<br><img src="TinyMT.png" alt="" title="TinyMTのstatus更新式"><br>斎藤睦夫, and 松本眞. “高速並列計算用の状態空間の小さな高品質疑似乱数生成器.” 研究報告ハイパフォーマンスコンピューティング (HPC) 2011.3 (2011): 1-6. より引用．</p>
 <p>基本的にはこの式を下から逆に計算するだけになります．</p>
-<h2 id="前準備"><a href="#前準備" class="headerlink" title="前準備"></a>前準備</h2><p>前準備として，$f(x) = x \oplus (x &gt;&gt; n)$のような関数の逆関数の求め方を紹介します($\oplus$は排他的論理和を表します)．<br><a href="http://d.hatena.ne.jp/oupo/20141016/1413413630" target="_blank" rel="external">メルセンヌツイスタの調律を行列で書く</a>  </p>
+<h2 id="前準備"><a href="#前準備" class="headerlink" title="前準備"></a>前準備</h2><p>前準備として，$f(x) = x \oplus (x &gt;&gt; n)$のような関数の逆関数の求め方を紹介します($\oplus$は排他的論理和を表します)．<br><a href="http://d.hatena.ne.jp/oupo/20141016/1413413630" target="_blank" rel="noopener">メルセンヌツイスタの調律を行列で書く</a>  </p>
 <p>また現在のstatusをそれぞれ$s_1, s_2, s_3, s_4$と書き，求めたい1つ前のstatusをそれぞれ$ps_1, ps_2, ps_3, ps_4$と書きます．</p>
 <h2 id="14行目から17行目"><a href="#14行目から17行目" class="headerlink" title="14行目から17行目"></a>14行目から17行目</h2><p>12行目をみれば$y$は$s_3$だとわかるので，$s_3$の奇偶をみれば良いことになります．よって<br><span>$${\rm s_1^{\prime}} = 
   \begin{cases}
@@ -108,7 +108,7 @@ Tiny Mersenne twister(以下Tiny MT)において現在のstatus4つ(128bitのsee
   y &amp;= s_3 \\
   x &amp;= s_2^{\prime} \oplus (y &lt;&lt; 10)
 \end{align*}$$</span><!-- Has MathJax --></p>
-<h2 id="5行目から8行目"><a href="#5行目から8行目" class="headerlink" title="5行目から8行目"></a>5行目から8行目</h2><h3 id="ps3を求める"><a href="#ps3を求める" class="headerlink" title="ps3を求める"></a>ps3を求める</h3><p>式の上で区別するために8行目の右辺の$y$を$y^{\prime}$と置きます．<br>これを使って8行目を丁寧に書くと，$y = y^{\prime} \oplus (y^{\prime} &gt;&gt; 1) \oplus x$となります．$x$を移行し，行列$A$を$f(x)=x \oplus (x &gt;&gt; 1)$と変換する行列だと考えると最終的に8行目は$x \oplus y = A y^{\prime}$と書けます．<br>上で紹介した<a href="http://d.hatena.ne.jp/oupo/20141016/1413413630" target="_blank" rel="external">メルセンヌツイスタの調律を行列で書く</a> を参考にこの行列$A$の逆行列$A^{-1}$を求めてやると，$y^{\prime} = A^{-1}(x \oplus y)$となり，6行目よりこれは${\rm ps_3}$に一致します．以上のことをまとめると<br><span>$$\begin{array}{cc}
+<h2 id="5行目から8行目"><a href="#5行目から8行目" class="headerlink" title="5行目から8行目"></a>5行目から8行目</h2><h3 id="ps3を求める"><a href="#ps3を求める" class="headerlink" title="ps3を求める"></a>ps3を求める</h3><p>式の上で区別するために8行目の右辺の$y$を$y^{\prime}$と置きます．<br>これを使って8行目を丁寧に書くと，$y = y^{\prime} \oplus (y^{\prime} &gt;&gt; 1) \oplus x$となります．$x$を移行し，行列$A$を$f(x)=x \oplus (x &gt;&gt; 1)$と変換する行列だと考えると最終的に8行目は$x \oplus y = A y^{\prime}$と書けます．<br>上で紹介した<a href="http://d.hatena.ne.jp/oupo/20141016/1413413630" target="_blank" rel="noopener">メルセンヌツイスタの調律を行列で書く</a> を参考にこの行列$A$の逆行列$A^{-1}$を求めてやると，$y^{\prime} = A^{-1}(x \oplus y)$となり，6行目よりこれは${\rm ps_3}$に一致します．以上のことをまとめると<br><span>$$\begin{array}{cc}
   {\rm ps_3} = A^{-1}(x \oplus y) &amp; (Aはf(x)=x \oplus (x &gt;&gt; 1)を表す行列)
 \end{array}$$</span><!-- Has MathJax --><br>となります．</p>
 <h3 id="ps0を求める"><a href="#ps0を求める" class="headerlink" title="ps0を求める"></a>ps0を求める</h3><p>先ほどと同じく7行目の右辺の$x$を$x^{\prime}$と置きます．<br>これを使って7行目を丁寧に書くと，$x = x^{\prime} \oplus (x^{\prime} &lt;&lt; 1)$と書けます．行列$B$を$f(x) = x \oplus (x &lt;&lt; 1)$と変換する行列だと考えると，$x^{\prime} = B^{-1}x$となります．<br>これを使うと${\rm ps_0}$は</p>
@@ -223,6 +223,18 @@ Tiny Mersenne twister(以下Tiny MT)において現在のstatus4つ(128bitのsee
 <script src="/js/jquery.imagesloaded.min.js"></script>
 <script src="/js/gallery.js"></script>
 
+
+<script type="text/javascript">
+var disqus_shortname = 'poyo-note';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
 
 
 
