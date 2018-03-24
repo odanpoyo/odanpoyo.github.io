@@ -83,7 +83,7 @@
 <a id="more"></a>
 <h1 id="動機"><a href="#動機" class="headerlink" title="動機"></a>動機</h1><p>ポケモンSMにおいて固定乱数を行うには，初期seed特定のために16GBのDBを作成する必要がありました．手持ちのパソコンに空き容量がない場合や，ツールに組むこむ場合に16GBのファイルは大きな障壁となっていました．そこで初期seed特定のためのAPIを公開します．</p>
 <h1 id="使い方"><a href="#使い方" class="headerlink" title="使い方"></a>使い方</h1><p>URLを叩くだけです．<br>例えば <code>6 10 9 15 10 0 2 7 5 8</code> という針が観測されたなら，クエリ文字列の部分に針を指定します．<br><a href="http://49.212.217.137:19937/gen7/sfmt/seed?needle=6,10,9,15,10,0,2,7,5,8" target="_blank" rel="noopener">http://49.212.217.137:19937/gen7/sfmt/seed?needle=6,10,9,15,10,0,2,7,5,8</a><br>レスポンスはJSON形式で返ってきます．</p>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">&#123;<span class="attr">"results"</span>: [&#123;<span class="attr">"seed"</span>: <span class="string">"bd1646f7"</span>, <span class="attr">"encoded_needle"</span>: <span class="string">"098726e4"</span>, <span class="attr">"step"</span>: <span class="number">417</span>&#125;]&#125;</div></pre></td></tr></table></figure>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="attr">"results"</span>: [&#123;<span class="attr">"seed"</span>: <span class="string">"bd1646f7"</span>, <span class="attr">"encoded_needle"</span>: <span class="string">"098726e4"</span>, <span class="attr">"step"</span>: <span class="number">417</span>&#125;]&#125;</span><br></pre></td></tr></table></figure>
 <p>針の数は8個以上15個以下です．</p>
 <h1 id="SFMTの針データベース作成プログラムについて"><a href="#SFMTの針データベース作成プログラムについて" class="headerlink" title="SFMTの針データベース作成プログラムについて"></a>SFMTの針データベース作成プログラムについて</h1><p>先日<a href="https://odanpoyo.github.io/2017/01/25/SFMT-DB/">SFMTの針データベース作成プログラム</a> を公開しました．この記事を知っている方の中には，「APIを公開するなら何故ローカルにDBを作成するプログラムを配布したんだろう？」「最初からAPIの公開のみでよかったのでは？」と思う方がいるかもしれません．私はDBを作成するプログラムを配布する意味はあったと考えています．なぜなら，APIのみを公開し全ての人がそれに依存してしまう構造はとても脆弱だからです．．DBを作成するプログラムも配布することでDBを持っている人を分散し，もし仮にAPIの公開が停止になっても乱数調整が可能であるような状態にしていたいのです．</p>
 
@@ -154,11 +154,11 @@
   
     <li><a href="/tags/ネタバレ/">ネタバレ</a><small>5</small></li>
   
-    <li><a href="/tags/プログラミング/">プログラミング</a><small>3</small></li>
+    <li><a href="/tags/プログラミング/">プログラミング</a><small>4</small></li>
   
-    <li><a href="/tags/ポケモン/">ポケモン</a><small>11</small></li>
+    <li><a href="/tags/ポケモン/">ポケモン</a><small>12</small></li>
   
-    <li><a href="/tags/乱数/">乱数</a><small>6</small></li>
+    <li><a href="/tags/乱数/">乱数</a><small>7</small></li>
   
   </ul>
 </div>
@@ -168,6 +168,10 @@
 <div class="widget tag">
   <h3 class="title">Recent Posts</h3>
   <ul class="entry">
+    
+      <li>
+        <a href="/2018/03/23/rng-api2/">初期seed特定APIのURL変更</a>
+      </li>
     
       <li>
         <a href="/2017/11/09/usum-tutor-moves-gen7/">USUMで7世代のポケモンが新たに教え技で覚える技一覧</a>
@@ -185,10 +189,6 @@
         <a href="/2017/11/09/usum-egg-moves/">USUMで新たにタマゴ技で覚える技一覧</a>
       </li>
     
-      <li>
-        <a href="/2017/11/09/usum-new-levelup-moves/">USUMで新たにレベルアップで覚える技一覧</a>
-      </li>
-    
   </ul>
 </div>
 
@@ -197,7 +197,7 @@
   </div>
   <footer id="footer" class="inner"><div class="alignleft">
   
-  &copy; 2017 おだんぽよ
+  &copy; 2018 おだんぽよ
   
 </div>
 <div class="clearfix"></div></footer>

@@ -3,13 +3,16 @@
 <head>
   <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
   
-  <title>ポケモン | ぽよのーと</title>
+  <title>初期seed特定APIのURL変更 | ぽよのーと</title>
   <meta name="author" content="おだんぽよ">
+  
+  <meta name="description" content="以前ポケモンSM固定乱数の初期seed特定APIができました と ポケモンSMのID乱数用初期seed特定APIができましたでSM固定乱数とID乱数の初期seed特定APIの紹介をしました。  
+今回、そのAPIの更新を行ったので、その報告をします。">
   
   
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  
+  <meta property="og:title" content="初期seed特定APIのURL変更"/>
   <meta property="og:site_name" content="ぽよのーと"/>
 
   
@@ -61,133 +64,72 @@
 <div class="clearfix"></div>
 </header>
   <div id="content" class="inner">
-    <div id="main-col" class="alignleft"><div id="wrapper">
-<h2 class="archive-title tag">ポケモン</h2>
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2018-03-23T13:47:19.000Z"><a href="/2018/03/23/rng-api2/">2018-03-23</a></time>
+      
+      
+  
+    <h1 class="title">初期seed特定APIのURL変更</h1>
+  
 
+    </header>
+    <div class="entry">
+      
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>以前<a href="https://odanpoyo.github.io/2017/01/26/rng-api/">ポケモンSM固定乱数の初期seed特定APIができました</a> と <a href="https://odanpoyo.github.io/2017/02/08/rng-api-id/">ポケモンSMのID乱数用初期seed特定APIができました</a>でSM固定乱数とID乱数の初期seed特定APIの紹介をしました。  </p>
+<p>今回、そのAPIの更新を行ったので、その報告をします。</p>
+<a id="more"></a>
+<h1 id="概要"><a href="#概要" class="headerlink" title="概要"></a>概要</h1><p>これまではSMとUSMの乱数調整のために以下の4つのAPIを提供していました。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">http://49.212.217.137:19937/gen7/sfmt/seed</span><br><span class="line">http://49.212.217.137:19937/gen7/sfmt/seed/id</span><br><span class="line">https://rng-api.poyo.club/usm/sfmt/seed</span><br><span class="line">https://rng-api.poyo.club/usm/sfmt/seed/id</span><br></pre></td></tr></table></figure>
+<p>この4つが今回の更新では次の通りに変更になります。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">https://rng-api.odanado.com/sm/sfmt/seed</span><br><span class="line">https://rng-api.odanado.com/sm/sfmt/seed/id</span><br><span class="line">https://rng-api.odanado.com/usm/sfmt/seed</span><br><span class="line">https://rng-api.odanado.com/usm/sfmt/seed/id</span><br></pre></td></tr></table></figure>
+<p><code>http://49.212.217.137:19937/gen7/sfmt</code> が <code>https://rng-api.odanado.com/sm/sfmt/seed</code> に、<code>https://rng-api.poyo.club/usm/sfmt/seed</code> が <code>https://rng-api.odanado.com/usm/sfmt/seed</code> に対応します。</p>
+<h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>元々上記のAPIはさくらVPSの最も安いプラン(月額1000円程度)のサーバ2台の上で動作していました。しかし、毎月2000円程度の出費は結構な痛手で、サーバを維持するために必要なお金を節約できるとの判断からAWS Lambdaに移行しました。それに伴い、ドメインも新しくAWS Route53で取得し、そこで新APIを公開することになりました。</p>
+<p>ソースコードは従来通り <a href="https://github.com/odanado/rng-api" target="_blank" rel="noopener">odanado/rng-api</a> で公開しています。</p>
 
-  <div class="archive">
-    
-      <article class="post">
-        <div class="post-content">
-          <header>
-            <div class="icon"></div>
-            <time datetime="2018-03-23T13:47:19.000Z"><a href="/2018/03/23/rng-api2/">2018-03-23</a></time>
-            
-              <h1 class="title"><a href="/2018/03/23/rng-api2/">初期seed特定APIのURL変更</a></h1>
-            
-          </header>
-        </div>
-      </article>
-    
-      <article class="post">
-        <div class="post-content">
-          <header>
-            <div class="icon"></div>
-            <time datetime="2017-11-09T14:01:02.000Z"><a href="/2017/11/09/usum-tutor-moves-gen7/">2017-11-09</a></time>
-            
-              <h1 class="title"><a href="/2017/11/09/usum-tutor-moves-gen7/">USUMで7世代のポケモンが新たに教え技で覚える技一覧</a></h1>
-            
-          </header>
-        </div>
-      </article>
-    
-      <article class="post">
-        <div class="post-content">
-          <header>
-            <div class="icon"></div>
-            <time datetime="2017-11-09T14:00:36.000Z"><a href="/2017/11/09/usum-tutor-moves-alola/">2017-11-09</a></time>
-            
-              <h1 class="title"><a href="/2017/11/09/usum-tutor-moves-alola/">USUMでアローラポケモンが新たに教え技で覚える技一覧</a></h1>
-            
-          </header>
-        </div>
-      </article>
-    
-      <article class="post">
-        <div class="post-content">
-          <header>
-            <div class="icon"></div>
-            <time datetime="2017-11-09T13:49:29.000Z"><a href="/2017/11/09/usum-tutor-moves-gen6/">2017-11-09</a></time>
-            
-              <h1 class="title"><a href="/2017/11/09/usum-tutor-moves-gen6/">USUMで6世代以前のポケモンが新たに教え技で覚える技一覧</a></h1>
-            
-          </header>
-        </div>
-      </article>
-    
-      <article class="post">
-        <div class="post-content">
-          <header>
-            <div class="icon"></div>
-            <time datetime="2017-11-09T11:10:12.000Z"><a href="/2017/11/09/usum-egg-moves/">2017-11-09</a></time>
-            
-              <h1 class="title"><a href="/2017/11/09/usum-egg-moves/">USUMで新たにタマゴ技で覚える技一覧</a></h1>
-            
-          </header>
-        </div>
-      </article>
-    
-      <article class="post">
-        <div class="post-content">
-          <header>
-            <div class="icon"></div>
-            <time datetime="2017-11-08T15:27:23.000Z"><a href="/2017/11/09/usum-new-levelup-moves/">2017-11-09</a></time>
-            
-              <h1 class="title"><a href="/2017/11/09/usum-new-levelup-moves/">USUMで新たにレベルアップで覚える技一覧</a></h1>
-            
-          </header>
-        </div>
-      </article>
-    
-      <article class="post">
-        <div class="post-content">
-          <header>
-            <div class="icon"></div>
-            <time datetime="2017-02-07T15:50:33.000Z"><a href="/2017/02/08/rng-api-id/">2017-02-08</a></time>
-            
-              <h1 class="title"><a href="/2017/02/08/rng-api-id/">ポケモンSMのID乱数用初期seed特定APIができました</a></h1>
-            
-          </header>
-        </div>
-      </article>
-    
-      <article class="post">
-        <div class="post-content">
-          <header>
-            <div class="icon"></div>
-            <time datetime="2017-01-25T15:01:55.000Z"><a href="/2017/01/26/rng-api/">2017-01-26</a></time>
-            
-              <h1 class="title"><a href="/2017/01/26/rng-api/">ポケモンSM固定乱数の初期seed特定APIができました</a></h1>
-            
-          </header>
-        </div>
-      </article>
-    
-      <article class="post">
-        <div class="post-content">
-          <header>
-            <div class="icon"></div>
-            <time datetime="2017-01-24T15:40:10.000Z"><a href="/2017/01/25/SFMT-DB/">2017-01-25</a></time>
-            
-              <h1 class="title"><a href="/2017/01/25/SFMT-DB/">SFMTの針データベース作成プログラム</a></h1>
-            
-          </header>
-        </div>
-      </article>
-    
-      <article class="post">
-        <div class="post-content">
-          <header>
-            <div class="icon"></div>
-            <time datetime="2017-01-21T04:47:50.000Z"><a href="/2017/01/21/SM-breed-tool/">2017-01-21</a></time>
-            
-              <h1 class="title"><a href="/2017/01/21/SM-breed-tool/">未孵化のROMに限り8匹孵化で孵化用seedを特定するツールの紹介</a></h1>
-            
-          </header>
-        </div>
-      </article>
-    
+      
+    </div>
+    <footer>
+      
+        
+        
+  
+  <div class="tags">
+    <a href="/tags/ポケモン/">ポケモン</a>, <a href="/tags/乱数/">乱数</a>, <a href="/tags/プログラミング/">プログラミング</a>
   </div>
+
+        
+          
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+    
+      <a class="addthis_button_tweet"></a>
+    
+    
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
+
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+<section id="comment">
+  <h1 class="title">Comments</h1>
+
+  
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+  
+</section>
 </div></div>
     <aside id="sidebar" class="alignright">
   <div class="widget tag">
@@ -275,7 +217,7 @@ var disqus_shortname = 'poyo-note';
   var dsq = document.createElement('script');
   dsq.type = 'text/javascript';
   dsq.async = true;
-  dsq.src = '//' + disqus_shortname + '.disqus.com/count.js';
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
   (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
 }());
 </script>
