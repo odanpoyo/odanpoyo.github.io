@@ -1,0 +1,356 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+  
+  <title>【poke2vec】word2vecをポケモンのパーティに適用してみた | ぽよのーと</title>
+  <meta name="author" content="おだんぽよ">
+  
+  <meta name="description" content="最近の自然言語処理の技術にword2vecと呼ばれるものがあります。word2vecは文字通り単語をベクトルに変換する技術のことで、これを用いることで単語同士の足し算や引き算を計算できます。これを使うと例えば、「王」+「女」-「男」から「女王」を導くことができます。今回この単語同士の足し算や引き算をする代わりにポケモン同士の足し算や引き算ができないかと実験してみました。
+学習に使用したコードは全て odanado/poke2vec にあります。">
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+  <meta property="og:title" content="【poke2vec】word2vecをポケモンのパーティに適用してみた"/>
+  <meta property="og:site_name" content="ぽよのーと"/>
+
+  
+    <meta property="og:image" content="undefined"/>
+  
+
+  <link href="/favicon.png" rel="icon">
+  <link rel="alternate" href="/atom.xml" title="ぽよのーと" type="application/atom+xml">
+  <link rel="stylesheet" href="/css/style.css" media="screen" type="text/css">
+  <!--[if lt IE 9]><script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+  
+<script>
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	ga('create', 'UA-49269757-12', 'auto');
+	ga('send', 'pageview');
+
+</script>
+
+
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <script>
+    (adsbygoogle = window.adsbygoogle || []).push({
+      google_ad_client: "ca-pub-6698466829268788",
+      enable_page_level_ads: true
+    });
+  </script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+</head>
+
+
+<body>
+  <!-- hexo-inject:begin --><!-- hexo-inject:end --><header id="header" class="inner"><div class="alignleft">
+  <h1><a href="/">ぽよのーと</a></h1>
+  <h2><a href="/"></a></h2>
+</div>
+<nav id="main-nav" class="alignright">
+  <ul>
+    
+      <li><a href="/">Home</a></li>
+    
+      <li><a href="/archives">Archives</a></li>
+    
+  </ul>
+  <div class="clearfix"></div>
+</nav>
+<div class="clearfix"></div>
+</header>
+  <div id="content" class="inner">
+    <div id="main-col" class="alignleft"><div id="wrapper"><article class="post">
+  
+  <div class="post-content">
+    <header>
+      
+        <div class="icon"></div>
+        <time datetime="2018-04-08T06:52:10.000Z"><a href="/2018/04/08/poke2vec/">2018-04-08</a></time>
+      
+      
+  
+    <h1 class="title">【poke2vec】word2vecをポケモンのパーティに適用してみた</h1>
+  
+
+    </header>
+    <div class="entry">
+      
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/hint.css/2.4.1/hint.min.css"><p>最近の自然言語処理の技術にword2vecと呼ばれるものがあります。word2vecは文字通り単語をベクトルに変換する技術のことで、これを用いることで単語同士の足し算や引き算を計算できます。<br>これを使うと例えば、「王」+「女」-「男」から「女王」を導くことができます。<br>今回この単語同士の足し算や引き算をする代わりにポケモン同士の足し算や引き算ができないかと実験してみました。</p>
+<p>学習に使用したコードは全て <a href="https://github.com/odanado/poke2vec" target="_blank" rel="noopener">odanado/poke2vec</a> にあります。</p>
+<a id="more"></a>
+<h1 id="word2vec"><a href="#word2vec" class="headerlink" title="word2vec"></a>word2vec</h1><p>最初にword2vecについて簡単に触れます。<br>いきなりですが単語の意味とはなんでしょうか？多くの人は辞書を引いてそこに書いてあることを単語の意味とするかもしれません。<br>一方で自然言語処理では、単語の意味は前後の文脈から決定されるという考え方をすることもあります。<br>今「林檎」という単語の意味を考えます。例えば「食べる」という動詞と共に出現することが多いと、「林檎」は食べ物の一種ではないか？と考えることができます。他にも「バナナ」、「メロン」など果物と共に出現することが多いと、果物の一種ではないか？と考えることができます。<br>word2vecはこの考え方を元に、単語の意味を表すベクトルを周辺単語から学習する手法です。</p>
+<h1 id="poke2vec"><a href="#poke2vec" class="headerlink" title="poke2vec"></a>poke2vec</h1><p>上で紹介した単語の意味の考え方を元に、あるポケモンの役割(意味)とは、種族値、タイプ、覚える技などの辞書的なものではなく、どんなポケモンと同時にパーティに使用されたかによって決定されるのではないかと考えました。<br>そこで今回、ポケモンのパーティを文、ポケモンを単語と見なして、word2vecのモデルの1つであるContinuous Bag-of-Words (CBoW) を適用してみました。より具体的には、6匹のパーティのうち5匹を入力として、残り1匹を推定する分類問題として学習します。<br>これにより、ポケモンの役割を表すベクトルを学習されることが期待でき、ベクトルの足し算引き算によってパーティ構築の手助けを出来ればと考えています。</p>
+<h1 id="データセットの構築"><a href="#データセットの構築" class="headerlink" title="データセットの構築"></a>データセットの構築</h1><p>実験では<a href="https://pokemonshowdown.com/" target="_blank" rel="noopener">Pokémon Showdown</a>の順位表からレーティング上位500人の対戦ログを収集し、そこで使用されたパーティの情報をデータセットとして用いました。Pokémon Showdownはオンライン上のポケモン対戦シミュレータのことで、日々人間同士のポケモン対戦が行われています。クリーニングしたデータを<a href="https://github.com/odanado/poke2vec/releases" target="_blank" rel="noopener">poke2vecのリポジトリ</a>で公開予定です。<br>収集したデータのルールは、シングルバトルとVGC2018<sup id="fnref:1"><a href="#fn:1" rel="footnote"><span class="hint--top-right hint--error hint--large" aria-label="2018年公式ルールのダブルバトルのこと">[1]</span></a></sup>の2つです。<br>対戦ログはシングルバトルは4,260件、VGC2018は14,405件収集することができました。</p>
+<p>その後クリーニングを行った後の各ルールでの収集したパーティ数は下の表のとおりです。<br>重複ありは、パーティの重複を許した件数です。パーティが6匹未満のものや中身が空な対戦ログを除去したため、件数が少し減っています。<br>重複なしは、同じパーティの並びを除去したものです。自然言語の文と異なり、ポケモンのパーティにおいてポケモンの並び方に意味はないので、異なる並びで同じポケモンから構成されているパーティは同一視しています。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">シングルバトル</th>
+<th style="text-align:center">VGC2018</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">重複あり</td>
+<td style="text-align:center">8,334</td>
+<td style="text-align:center">28,730</td>
+</tr>
+<tr>
+<td style="text-align:center">重複なし</td>
+<td style="text-align:center">5,010</td>
+<td style="text-align:center">7,707</td>
+</tr>
+</tbody>
+</table>
+<h1 id="データセットの分析"><a href="#データセットの分析" class="headerlink" title="データセットの分析"></a>データセットの分析</h1><p>データセットの分析を行いました。各数値は下の表のとおりです。<br>ポケモンの種類は、収集したパーティに含まれるポケモンの種類です。ウルトラサンムーンが発売された今では800匹を超える種類のポケモンがいます。<br>上位100匹の全体の割合は、使用頻度が上位のポケモンが全体のどれだけを占めているのかを表しています。2割ちょっとのポケモン達が全体の9割を占めているので、偏りが激しいことがわかります。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">シングルバトル</th>
+<th style="text-align:center">VGC2018</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">ポケモンの種類</td>
+<td style="text-align:center">500</td>
+<td style="text-align:center">433</td>
+</tr>
+<tr>
+<td style="text-align:center">上位100匹の全体の割合</td>
+<td style="text-align:center">89.2%</td>
+<td style="text-align:center">92.7%</td>
+</tr>
+</tbody>
+</table>
+<h1 id="実験設定"><a href="#実験設定" class="headerlink" title="実験設定"></a>実験設定</h1><p>データセットの1割を評価セット、残りを訓練セットとして使用しました。<br>上位100匹以外のポケモンは、未知ポケモンを表す <code>&lt;unk&gt;</code> で置換し、ポケモンと整数の対応表を構築しました。<br>モデルにはCBoW、損失関数には負例サンプリング (窓サイズ5) を使用しました。その実装にはchainerのexamplesにあるword2vecのコードを用いました。<br>CBoWの中間層は32,64,128,256次元を試し、評価セットのロスが最も小さいものを選びました。<br>学習は10epoch回しました。</p>
+<h1 id="実験結果"><a href="#実験結果" class="headerlink" title="実験結果"></a>実験結果</h1><h2 id="学習曲線"><a href="#学習曲線" class="headerlink" title="学習曲線"></a>学習曲線</h2><p>評価セットのロスの変化を下の図に示します。<br><img src="single_loss.png" alt="" title="シングルバトルでの評価セットのロス"> <img src="vgc2018_loss.png" alt="" title="VGC2018での評価セットのロス"><br>図からわかるようにどちらも中間層が256次元の設定が、評価セットのロスが最も小さくなりました。</p>
+<h2 id="ベクトルの可視化"><a href="#ベクトルの可視化" class="headerlink" title="ベクトルの可視化"></a>ベクトルの可視化</h2><p>Principal Component Analysis (PCA) を用いて256次元のベクトルを2次元に圧縮し、各点にポケモンのアイコンを表示する散布図を作成しました。上がシングルバトル、下がVGC2018です。</p>
+<p><img src="single_scatter.png" alt="" title="シングルバトルの散布図"> <img src="vgc2018_scatter.png" alt="" title="VGC2018の散布図"></p>
+<p>どちらの図もどこか1点にポケモンが集中しており、少し離れたところに水タイプのポケモンが集まっているのがわかります(シングルバトルだと下の方、VGC2018だと左上)。また、シングルバトルでは右上に地面タイプのポケモンが集まっているのに対して、VGC2018にはそのような傾向は見られません。反対に、VGC2018では右上に炎タイプのポケモンが集まっていますが、シングルバトルではその傾向はありません。<br>僕はあまり対戦には詳しくないので、どなたか面白い考察をしてくださる方を募集しています。</p>
+<h2 id="ポケモン同士の足し算引き算"><a href="#ポケモン同士の足し算引き算" class="headerlink" title="ポケモン同士の足し算引き算"></a>ポケモン同士の足し算引き算</h2><p>VGC2018のポケモンベクトルで、ポケモン同士の足し算引き算をしてみました。設定は次の通りです。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">「ボルトロス(霊獣)」+「サンダー」-「ライボルト」</span><br></pre></td></tr></table></figure>
+<p>類似度トップ5は以下のようになりました。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">ポケモン</th>
+<th style="text-align:center">類似度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">ボルトロス(化身)</td>
+<td style="text-align:center">0.71</td>
+</tr>
+<tr>
+<td style="text-align:center">カプ・コケコ</td>
+<td style="text-align:center">0.54</td>
+</tr>
+<tr>
+<td style="text-align:center">デンジュモク</td>
+<td style="text-align:center">0.51</td>
+</tr>
+<tr>
+<td style="text-align:center">ロトム(ヒート)</td>
+<td style="text-align:center">0.44</td>
+</tr>
+<tr>
+<td style="text-align:center">アーゴヨン</td>
+<td style="text-align:center">0.43</td>
+</tr>
+</tbody>
+</table>
+<p>5匹中4匹が同じ電気タイプのポケモンでした。役割的に同じポケモンを選ぼうとするとタイプがかぶりやすいのかもしれません。<br>これまた僕が対戦に詳しくないために、これ以上コメントすることができません…。詳しい方がいたら教えて欲しいです。<br>また、他の組み合わせでも足し算や引き算をした結果を知りたい方はTwitterで聞いて下さい。お答えします。</p>
+<h1 id="まとめ"><a href="#まとめ" class="headerlink" title="まとめ"></a>まとめ</h1><ul>
+<li>単語の意味ベクトルを学習する方法であるCBoWを用いて、ポケモンの役割(意味)ベクトルを学習しようと試みました。</li>
+<li>学習データはPokémon Showdownからレーティング上位500人の対戦ログから収集しました。</li>
+<li>学習したポケモンベクトルをPCAで圧縮し可視化すると、タイプが同じポケモンが集まっていることが確認できました。</li>
+<li>ポケモン同士の演算を行った結果、同じタイプのポケモンが多く上位にヒットし、近い役割のポケモンがピックアップ出来ていると考えることができました。</li>
+</ul>
+<h1 id="今後の展望"><a href="#今後の展望" class="headerlink" title="今後の展望"></a>今後の展望</h1><ul>
+<li>可視化やポケモン同士の演算を自由に行えるWebサイトを作り、多くの人からのフィードバックを受けたいです。</li>
+</ul>
+<div id="footnotes"><hr><div id="footnotelist"><ol style="list-style: none; padding-left: 0; margin-left: 40px"><li id="fn:1"><span style="display: inline-block; vertical-align: top; padding-right: 10px; margin-left: -40px">1.</span><span style="display: inline-block; vertical-align: top; margin-left: 10px;">2018年公式ルールのダブルバトルのこと<a href="#fnref:1" rev="footnote"> ↩</a></span></li></ol></div></div>
+      
+    </div>
+    <footer>
+      
+        
+        
+  
+  <div class="tags">
+    <a href="/tags/ポケモン/">ポケモン</a>, <a href="/tags/プログラミング/">プログラミング</a>
+  </div>
+
+        
+          
+  <div class="addthis addthis_toolbox addthis_default_style">
+    
+    
+      <a class="addthis_button_tweet"></a>
+    
+    
+    
+    <a class="addthis_counter addthis_pill_style"></a>
+  </div>
+  <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js"></script>
+
+        
+      
+      <div class="clearfix"></div>
+    </footer>
+  </div>
+</article>
+<section id="comment">
+  <h1 class="title">Comments</h1>
+
+  
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+  
+</section>
+</div></div>
+    <aside id="sidebar" class="alignright">
+  <div class="widget tag">
+    <h3 class="title">about</h3>
+    <ul class="entry">
+        <li>ポケモンの乱数調整とか</li>
+        <li><a href="https://twitter.com/poke_odan" target="_blank">@poke_odan</a></li>
+    </ul>
+</div>
+
+  <div class="search">
+  <form action="//google.com/search" method="get" accept-charset="utf-8">
+    <input type="search" name="q" results="0" placeholder="Search">
+    <input type="hidden" name="q" value="site:odanpoyo.github.io">
+  </form>
+</div>
+
+  
+
+  
+<div class="widget tag">
+  <h3 class="title">Tags</h3>
+  <ul class="entry">
+  
+    <li><a href="/tags/USUM/">USUM</a><small>5</small></li>
+  
+    <li><a href="/tags/ネタバレ/">ネタバレ</a><small>5</small></li>
+  
+    <li><a href="/tags/プログラミング/">プログラミング</a><small>5</small></li>
+  
+    <li><a href="/tags/ポケモン/">ポケモン</a><small>13</small></li>
+  
+    <li><a href="/tags/乱数/">乱数</a><small>7</small></li>
+  
+  </ul>
+</div>
+
+
+  
+<div class="widget tag">
+  <h3 class="title">Recent Posts</h3>
+  <ul class="entry">
+    
+      <li>
+        <a href="/2018/04/08/poke2vec/">【poke2vec】word2vecをポケモンのパーティに適用してみた</a>
+      </li>
+    
+      <li>
+        <a href="/2018/03/23/rng-api2/">初期seed特定APIのURL変更</a>
+      </li>
+    
+      <li>
+        <a href="/2017/11/09/usum-tutor-moves-gen7/">USUMで7世代のポケモンが新たに教え技で覚える技一覧</a>
+      </li>
+    
+      <li>
+        <a href="/2017/11/09/usum-tutor-moves-alola/">USUMでアローラポケモンが新たに教え技で覚える技一覧</a>
+      </li>
+    
+      <li>
+        <a href="/2017/11/09/usum-tutor-moves-gen6/">USUMで6世代以前のポケモンが新たに教え技で覚える技一覧</a>
+      </li>
+    
+  </ul>
+</div>
+
+</aside>
+    <div class="clearfix"></div>
+  </div>
+  <footer id="footer" class="inner"><div class="alignleft">
+  
+  &copy; 2018 おだんぽよ
+  
+</div>
+<div class="clearfix"></div></footer>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+
+
+<script type="text/javascript">
+var disqus_shortname = 'poyo-note';
+
+(function(){
+  var dsq = document.createElement('script');
+  dsq.type = 'text/javascript';
+  dsq.async = true;
+  dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+}());
+</script>
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+(function($){
+  $('.fancybox').fancybox();
+})(jQuery);
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"displayMath":[["$$","$$"],["\\[","\\]"]]}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+</body>
+</html>
